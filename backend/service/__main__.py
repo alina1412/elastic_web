@@ -1,8 +1,13 @@
 import uvicorn
-from fastapi import FastAPI
+
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from service.config import app
+from service.endpoints.delete_handlers import api_router as delete_routes
+from service.endpoints.get_handlers import api_router as get_routes
+
+app.include_router(get_routes)
+app.include_router(delete_routes)
 
 app.add_middleware(
     CORSMiddleware,

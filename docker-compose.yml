@@ -17,7 +17,7 @@ services:
 
   backend:
     container_name: ${DOCKER_APP_NAME}
-    build: ./backend
+    build: ./backend/service
     image: fastapi-app
     restart: always
     ports:
