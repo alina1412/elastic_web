@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <title>Home</title>
+</head>
+
+<body>
+    <div style="width: 50%; margin:auto;">
+        <h1>запрос</h1>
+
+        <form id="form">
+            <p><label for="text">запрос:</label></p>
+
+            <p><textarea id="text" name="text" rows="4" cols="50" style="resize: vertical;"></textarea>
+            </p>
+            <p><button type="submit" id="btn">Отправить</button></p>
+
+        </form>
+    </div>
+
+
+    <div id="container"> </div>
+
+    <script>
+        function myFunction(event) {
+            event.preventDefault();
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8000/");
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    console.log(xhr.status);
+                    console.log(xhr.responseText);
+                    if (xhr.status == 422) {
+                        alert("ошибка");
+                    }
+                }
+            };
+
+            let data = JSON.stringify({
+                "text": document.getElementById('text').value
+            });
+            console.log(data);
+            xhr.send(data);
+        }
+        const btn = document.getElementById("btn");
+        btn.onclick = (event) => myFunction(event);
+        btn.onclick = function (event) {
+            return myFunction(event);
+        };
+
+
+
+        const myBody = JSON.stringify({
+            "1": "2"
+        });
+        fetch('http://localhost:8000/', {
+                method: 'POST',
+                body: myBody, // string or object
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => response.json())
+            // .then(data => console.log(data))
+            .then(data => {
+                // const demo = document.getElementById("demo");
+                // demo.innerHTML = data.message;
+                for (var key in data) {
+                    var title = data[key];
+                    var badge = document.createElement('div');
+                    badge.className = 'badge';
+                    badge.innerHTML =
+                        '<h1>' + title + '</h1>' + '<hr>'
+                    document.getElementById("container").appendChild(badge);
+                }
+            });
+    </script>
+</body>
+
+</html>

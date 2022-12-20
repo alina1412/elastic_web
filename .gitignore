@@ -1,0 +1,13 @@
+.venv/
+my_*
+__pycache__/
+*.env
+.vscode
+.pytest_cache
+.database_data/*
+htmlcov/*
+.coverage
+example_*
+
+**/posts.csv
+http_ca.crt
