@@ -1,7 +1,8 @@
 from fastapi import APIRouter, status
 from fastapi.exceptions import HTTPException
-
 from service.utils.logic import doc_delete_from_index
+
+from backend.service.utils.errors import NotInElastic
 
 api_router = APIRouter(
     prefix="/v1",
@@ -22,14 +23,15 @@ api_router = APIRouter(
     },
 )
 async def delete_one_handler(
-    doc_id: int, index_name: str = "map", 
+    doc_id: int,
+    index_name: str = "map",
 ):
     """Deletes a document from elastic index by id"""
-  
+
     try:
         await doc_delete_from_index(index_name, doc_id)
-    # except NotInElastic as exc:
-    #     raise HTTPException(404, detail="nothing to delete") from exc
+    except NotInElastic as exc:
+        raise HTTPException(404, detail="nothing to delete") from exc
     except Exception as exc:
         print(exc)
         raise HTTPException(503, detail="some error during deletion") from exc

@@ -40,7 +40,7 @@ req:
 	poetry export -f requirements.txt --without-hashes --with dev --output requirements.txt
 
 req-without-dev:
-	poetry export -f requirements.txt --without-hashes --without dev --output requirements.txt
+	poetry export -f requirements.txt --without-hashes --without dev --output backend/service/requirements.txt
 
 ping:
 	curl -XGET localhost:9200

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Query, status
 from fastapi.exceptions import HTTPException
-
-from starlette.requests import Request
-
 from service.config import econf
 from service.utils.logic import get_matching_by_message
+from starlette.requests import Request
+
+from backend.service.utils.errors import NoIndex
 
 api_router = APIRouter(
     prefix="/v1",
@@ -29,11 +29,15 @@ async def get_matching_handler(
     if not query.strip():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="nothing to search")
 
-    params = {"query": query, "size": econf.elastic_size, "index_name": econf.elastic_index}
+    params = {
+        "query": query,
+        "size": econf.elastic_size,
+        "index_name": econf.elastic_index,
+    }
     try:
         res = await get_matching_by_message(params, request)
         return res
-    # except NoIndex as exc:
-    #     raise HTTPException(500, f"No such index '{econf.elastic_index}' to search") from exc
-    except Exception as exc:
-        raise HTTPException(500, "") from exc
+    except NoIndex as exc:
+        raise HTTPException(
+            500, f"No such index '{econf.elastic_index}' to search"
+        ) from exc

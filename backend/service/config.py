@@ -17,10 +17,9 @@ class ElasticConfig:
     assert elastic_user
 
 
-
 econf = ElasticConfig()
 elastic_client = Elasticsearch(
-    [f'http://{econf.elastic_host}:{econf.elastic_host_port}'], 
+    [f"http://{econf.elastic_host}:{econf.elastic_host_port}"],
     basic_auth=(econf.elastic_user, econf.elastic_password),
 )
 
