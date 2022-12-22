@@ -3,8 +3,8 @@ ifdef OS
 	docker_build = docker compose up -d --build
 	docker_down = docker compose down
 else
-	docker_build = sudo docker-compose up -d --build
-	docker_down = sudo docker-compose down
+	docker_build = sudo docker compose up -d --build
+	docker_down = sudo docker compose down
 endif
 
 build:
@@ -21,10 +21,6 @@ app:
 	docker-compose build backend
 	docker-compose up -d backend
 
-
-renew:
-	poetry run alembic -c alembic.ini downgrade -1
-	poetry run alembic -c alembic.ini upgrade head
 
 test:
 	make renew
@@ -44,3 +40,10 @@ req-without-dev:
 
 ping:
 	curl -XGET localhost:9200
+
+del-map:
+	curl -XDELETE "http://localhost:9200/map"
+
+get-map:
+	curl -XGET "http://localhost:9200/map"
+	

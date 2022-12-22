@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status
 from fastapi.exceptions import HTTPException
-from service.utils.logic import doc_delete_from_index
 
-from backend.service.utils.errors import NotInElastic
+from service.utils.errors import NotInElastic  # isort: skip
+from service.utils.elastic_logic import doc_delete_from_index  # isort: skip
 
 api_router = APIRouter(
     prefix="/v1",

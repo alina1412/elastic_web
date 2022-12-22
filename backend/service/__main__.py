@@ -1,11 +1,13 @@
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from service.config import app
+from service.endpoints.create_index_handler import api_router as create_routes
 from service.endpoints.delete_handlers import api_router as delete_routes
 from service.endpoints.get_handlers import api_router as get_routes
 
-app.include_router(get_routes)
-app.include_router(delete_routes)
+for route in (create_routes, get_routes, delete_routes):
+    app.include_router(route)
+
 
 app.add_middleware(
     CORSMiddleware,

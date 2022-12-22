@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Query, status
 from fastapi.exceptions import HTTPException
-from service.config import econf
-from service.utils.logic import get_matching_by_message
 from starlette.requests import Request
 
-from backend.service.utils.errors import NoIndex
+from service.config import econf  # isort: skip
+from service.utils.errors import NoIndex  # isort: skip
+from service.utils.elastic_logic import get_matching_by_message  # isort: skip
 
 api_router = APIRouter(
     prefix="/v1",
