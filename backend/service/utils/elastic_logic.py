@@ -1,5 +1,6 @@
-from elasticsearch import AsyncElasticsearch
-from elasticsearch.exceptions import NotFoundError
+from elasticsearch import AsyncElasticsearch, NotFoundError
+
+from starlette.requests import Request
 
 from service.config import app  # isort: skip
 from service.mapping import elastic_text_settings, mapping_for_index  # isort: skip
@@ -9,18 +10,20 @@ from service.utils.errors import NoIndex, NotInElastic  # isort: skip
 async def doc_delete_from_index(index_name, doc_id) -> None:
     """deletes doc from index in elastic by id
     id - manual from schema (should be unique)"""
-    query = {"query": {"term": {"id": id}}}
-    print("doc_delete_from_index")
-    return
-    # res = app.state.elastic_client.search(index=index_name, body=query)
+    elastic_client = app.state.elastic_client
+    if not elastic_client.indices.exists(index=index_name):
+        raise NotInElastic
+    query = {"query": {"term": {"id": doc_id}}}
+    res = app.state.elastic_client.search(index=index_name, body=query)
+
     # id = res.get("hits", {}).get("hits", [{}])[0].get("_source", {}).get("id")
-    # hits = res.get("hits", {}).get("hits", [{}])
-    # if not hits:
-    #     raise NotInElastic
-    # inner_id = hits[0].get("_id")
-    # if not inner_id:
-    #     raise NotInElastic
-    # app.state.elastic_client.delete(index=index_name, id=inner_id)
+    hits = res.get("hits", {}).get("hits", [{}])
+    if not hits:
+        raise NotInElastic
+    inner_id = hits[0].get("_id")
+    if not inner_id:
+        raise NotInElastic
+    app.state.elastic_client.delete(index=index_name, id=inner_id)
 
 
 async def get_matching_by_message(params, request) -> dict:
@@ -63,3 +66,10 @@ async def create_elastic_index(name) -> None:
 async def elastic_insert(index_name: str, insert_data: dict) -> None:
     """insert data into elastic index"""
     app.state.elastic_client.index(index=index_name, document=insert_data)
+
+
+async def delete_index(request: Request, index_name: str):
+    """delete index from elastic"""
+    elastic_client: AsyncElasticsearch = request.app.state.elastic_client
+    elastic_client.indices.delete(index=index_name)
+    

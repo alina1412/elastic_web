@@ -1,8 +1,13 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Query, status
 from fastapi.exceptions import HTTPException
+from starlette.requests import Request
+from elasticsearch.exceptions import NotFoundError
 
 from service.utils.errors import NotInElastic  # isort: skip
-from service.utils.elastic_logic import doc_delete_from_index  # isort: skip
+from service.utils.elastic_logic import (
+    delete_index,
+    doc_delete_from_index,
+)  # isort: skip
 
 api_router = APIRouter(
     prefix="/v1",
@@ -24,7 +29,7 @@ api_router = APIRouter(
 )
 async def delete_one_handler(
     doc_id: int,
-    index_name: str = "map",
+    index_name: str = Query(default="map", min_length=1, description="index name"),
 ):
     """Deletes a document from elastic index by id"""
 
@@ -35,3 +40,23 @@ async def delete_one_handler(
     except Exception as exc:
         print(exc)
         raise HTTPException(503, detail="some error during deletion") from exc
+
+
+@api_router.delete(
+    "/delete-index",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        status.HTTP_400_BAD_REQUEST: {"description": "Bad request"},
+        status.HTTP_404_NOT_FOUND: {"description": "No index to delete"},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Bad request"},
+    },
+)
+async def delete_index_handler(
+    request: Request,
+    index_name: str = Query(default="map", min_length=1, description="index name"),
+):
+    """delete_index from elastic"""
+    try:
+        await delete_index(request, index_name)
+    except NotFoundError as exc:
+        raise HTTPException(404, detail="No index to delete") from exc
