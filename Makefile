@@ -47,3 +47,7 @@ del-map:
 get-map:
 	curl -XGET "http://localhost:9200/map"
 	
+
+
+check:
+	curl -XPOST 'http://localhost:9200/_analyze?pretty' -H 'Content-Type: application/json' -d '{"text": "администратор", "analyzer": "russian"}'
