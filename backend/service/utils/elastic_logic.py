@@ -39,13 +39,12 @@ async def get_matching_by_message(params, request) -> dict:
         },
     }
     print("get_matching_by_message")
-    return {}
-    # try:
-    #     elastic_client: AsyncElasticsearch = request.app.state.elastic_client
-    #     res = elastic_client.search(index=params["index_name"], body=searching)
-    #     return dict(res)
-    # except NotFoundError:
-    #     raise NoIndex
+    try:
+        elastic_client: AsyncElasticsearch = request.app.state.elastic_client
+        res = elastic_client.search(index=params["index_name"], body=searching)
+        return dict(res)
+    except NotFoundError:
+        raise NoIndex
 
 
 async def create_elastic_index(name) -> None:
