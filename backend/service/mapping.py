@@ -19,23 +19,43 @@ mapping_for_index = {
 
 elastic_text_settings = {
     "analysis": {
-        "analyzer": {
-            "my_analyzer": {
-                "type": "custom",
-                "tokenizer": "my_tokenizer",
-                "filter": [
-                    "lowercase"
-                ]
-            }
+      "filter": {
+        "russian_stop": {
+          "type":       "stop",
+          "stopwords":  "_russian_" 
         },
-        "tokenizer": {
-            "my_tokenizer": {
-                "type": "edge_ngram",
-                "min": 3,
-                "max": 15,
-                "token_chars": ["letter", "digit"]
-            }
+        "russian_keywords": {
+          "type":       "keyword_marker",
+          "keywords":   ["пример"] 
+        },
+        "russian_stemmer": {
+          "type":       "stemmer",
+          "language":   "russian"
+        }
+      },
+      "analyzer": {
+        "my_analyzer": {
+          "tokenizer":   "edge_ngram_tokenizer",
+          "filter": [
+            "lowercase",
+            "russian_stop",
+            "russian_keywords",
+            "russian_stemmer"
+          ]
+        },
+      },
+       "tokenizer": {
+          "edge_ngram_tokenizer": {
+            "type": "edge_ngram",
+            "min_gram": 3,
+            "max_gram": 15,
+            "token_chars": [
+              "letter", 
+              "digit"
+            ]
+          }
         }
     }
 }
+
 # fmt: on
