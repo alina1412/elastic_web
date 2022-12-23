@@ -1,20 +1,18 @@
-
 from elasticsearch import AsyncElasticsearch
+from elasticsearch.exceptions import NotFoundError
 from fastapi import APIRouter, Query, status
 from fastapi.exceptions import HTTPException
 from starlette.requests import Request
-from elasticsearch.exceptions import NotFoundError
 
+# fmt: off
+from service.utils.elastic_logic import elastic_insert  # isort: skip
 from service.utils.errors import NotInElastic  # isort: skip
-from service.utils.elastic_logic import (
-    elastic_insert
-)  # isort: skip
+# fmt: on
 
 api_router = APIRouter(
     prefix="/v1",
     tags=["data"],
 )
-
 
 
 @api_router.put(
@@ -26,12 +24,12 @@ api_router = APIRouter(
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Bad request"},
     },
 )
-async def create_data_handler(request: Request, 
+async def create_data_handler(
+    request: Request,
     index_name: str = Query(default="", min_length=1, description="index name"),
     doc_id: str = Query(default="", min_length=1, description="doc id"),
     message: str = Query(default="", min_length=1, description="message"),
-
-    ):
+):
     """"""
     if not index_name.strip() or not message.strip():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="nothing to create")
@@ -39,5 +37,5 @@ async def create_data_handler(request: Request,
     elastic_client: AsyncElasticsearch = request.app.state.elastic_client
     if not elastic_client.indices.exists(index=index_name):
         raise HTTPException(404, detail="no index")
-    
+
     await elastic_insert(index_name, {"id": doc_id, "message": message})

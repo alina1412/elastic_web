@@ -1,5 +1,4 @@
 from elasticsearch import AsyncElasticsearch, NotFoundError
-
 from starlette.requests import Request
 
 from service.config import app  # isort: skip
@@ -72,4 +71,3 @@ async def delete_index(request: Request, index_name: str):
     """delete index from elastic"""
     elastic_client: AsyncElasticsearch = request.app.state.elastic_client
     elastic_client.indices.delete(index=index_name)
-    

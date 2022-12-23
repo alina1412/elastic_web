@@ -1,13 +1,12 @@
+from elasticsearch.exceptions import NotFoundError
 from fastapi import APIRouter, Query, status
 from fastapi.exceptions import HTTPException
 from starlette.requests import Request
-from elasticsearch.exceptions import NotFoundError
 
-from service.utils.errors import NotInElastic  # isort: skip
-from service.utils.elastic_logic import (
-    delete_index,
-    doc_delete_from_index,
-)  # isort: skip
+# fmt: off
+from service.utils.errors import NotInElastic  # isort: skip # noqa 
+from service.utils.elastic_logic import delete_index, doc_delete_from_index  # isort: skip # noqa
+# fmt: on
 
 api_router = APIRouter(
     prefix="/v1",
