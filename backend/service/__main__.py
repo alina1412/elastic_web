@@ -1,3 +1,5 @@
+import json
+
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from service.config import app
@@ -19,7 +21,17 @@ app.add_middleware(
 
 @app.post("/")
 async def root(myBody: dict):
-    return {"message": "Hello World", "m2": "TODO"}
+    key = list(dict(myBody).keys())[0]
+    val = list(dict(myBody).values())[0]
+    if key == "onload":
+        return {
+            "all": 1,
+            "found": json.dumps(["all"]),
+        }
+    return {
+        "search": "Hello World",
+        "found": json.dumps([val]),
+    }
 
 
 # if __name__ == "__main__":

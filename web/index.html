@@ -11,20 +11,19 @@
 
 <body>
     <div style="width: 50%; margin:auto;">
-        <h1>запрос</h1>
+        <h1>Запросы</h1>
 
-        <form id="form">
-            <p><label for="text">запрос:</label></p>
-
+        <form id="form" action="http://localhost:8000/" method="POST">
+            <p><label for="text">поиск по запросам:</label></p>
             <p><textarea id="text" name="text" rows="4" cols="50" style="resize: vertical;"></textarea>
             </p>
             <p><button type="submit" id="btn">Отправить</button></p>
 
         </form>
     </div>
-
-
-    <div id="container"> </div>
+    <div style="width: 70%; margin:auto;">
+        <div id="container"> </div>
+    </div>
 
     <script>
         function myFunction(event) {
@@ -41,6 +40,21 @@
                     if (xhr.status == 422) {
                         alert("ошибка");
                     }
+                    else if (xhr.status == 200) {
+                        document.getElementById("container").replaceChildren();
+                        let res_list = JSON.parse((JSON.parse(xhr.responseText).found))
+                        console.log(res_list)
+
+                        for (var num in res_list) {
+                            var title =  res_list[num]
+                            // console.log(res_list[num])
+                            var badge = document.createElement('div');
+                            badge.className = 'badge';
+                            badge.innerHTML =
+                                '<h1>' + title + '</h1>' + '<hr>'
+                            document.getElementById("container").appendChild(badge);
+                        }
+                    }
                 }
             };
 
@@ -50,6 +64,7 @@
             console.log(data);
             xhr.send(data);
         }
+
         const btn = document.getElementById("btn");
         btn.onclick = (event) => myFunction(event);
         btn.onclick = function (event) {
@@ -59,7 +74,7 @@
 
 
         const myBody = JSON.stringify({
-            "1": "2"
+            "onload": "1"
         });
         fetch('http://localhost:8000/', {
                 method: 'POST',
@@ -68,10 +83,7 @@
                     'Content-Type': 'application/json'
                 }
             }).then(response => response.json())
-            // .then(data => console.log(data))
             .then(data => {
-                // const demo = document.getElementById("demo");
-                // demo.innerHTML = data.message;
                 for (var key in data) {
                     var title = data[key];
                     var badge = document.createElement('div');
