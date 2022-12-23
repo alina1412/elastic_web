@@ -1,7 +1,9 @@
-FROM debian:latest
+FROM python:slim-buster
 
-RUN apt-get update && \ 
-		apt-get install -y python3 python3-pip
+# FROM debian:latest
+
+# RUN apt-get update && \ 
+# 		apt-get install -y python3 python3-pip
 
 RUN mkdir -p /app/service
 WORKDIR /app
