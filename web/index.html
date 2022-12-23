@@ -46,8 +46,8 @@
                         console.log(res_list)
 
                         for (var num in res_list) {
-                            var title =  res_list[num]
-                            // console.log(res_list[num])
+                            var title =  res_list[num].message
+                            console.log(title)
                             var badge = document.createElement('div');
                             badge.className = 'badge';
                             badge.innerHTML =
@@ -84,15 +84,20 @@
                 }
             }).then(response => response.json())
             .then(data => {
-                for (var key in data) {
-                    var title = data[key];
+                console.log(data)
+                let res_list = JSON.parse((JSON.parse(data).found))
+                console.log(res_list)
+                for (var key in res_list) {
+                    var title = res_list[key].message;
+                    console.log(title)
                     var badge = document.createElement('div');
                     badge.className = 'badge';
                     badge.innerHTML =
                         '<h1>' + title + '</h1>' + '<hr>'
                     document.getElementById("container").appendChild(badge);
                 }
-            });
+            }
+            );
     </script>
 </body>
 

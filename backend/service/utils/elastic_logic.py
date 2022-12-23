@@ -71,3 +71,13 @@ async def delete_index(request: Request, index_name: str):
     """delete index from elastic"""
     elastic_client: AsyncElasticsearch = request.app.state.elastic_client
     elastic_client.indices.delete(index=index_name)
+
+
+async def get_all_from_index(index_name):
+    searching = {"query": {"match_all": {}}}
+    try:
+        elastic_client: AsyncElasticsearch = app.state.elastic_client
+        res = elastic_client.search(index=index_name, body=searching)
+        return dict(res)
+    except NotFoundError:
+        raise NoIndex
