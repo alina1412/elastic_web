@@ -3,12 +3,13 @@ import csv
 
 import elasticsearch
 
+# fmt: off
 from backend.service.config import app  # isort: skip
 from backend.service.mapping import (
     elastic_text_settings,
     mapping_for_index,
 )  # isort: skip
-
+# fmt: on
 
 async def create_elastic_index(name) -> None:
     """creates index in elastic by name"""
@@ -39,6 +40,7 @@ def fake_get_tuple():
         (1, "образец поискового запроса 1"),
         (2, "текст на русском, админ не проверял"),
         (3, "образ этого текста отпечатался сам"),
+        (4, "преобразован администратором")
     ]
     for tuple_ in data:
         yield tuple_
