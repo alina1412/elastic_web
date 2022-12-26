@@ -78,7 +78,7 @@
         });
         fetch('http://localhost:8000/', {
                 method: 'POST',
-                body: myBody, // string or object
+                body: myBody,
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -88,6 +88,7 @@
                 let res_list = JSON.parse((JSON.parse(data).found))
                 console.log(res_list)
                 for (var key in res_list) {
+                    console.log("key", key)
                     var title = res_list[key].message;
                     console.log(title)
                     var badge = document.createElement('div');
