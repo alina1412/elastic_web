@@ -36,5 +36,5 @@ async def create_index_handler(
     except elasticsearch.exceptions.RequestError as exc:
         if exc.error == "resource_already_exists_exception":
             print("Index already exists")
-            raise HTTPException(500, "Index already exists") from exc
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Index already exists") from exc
         raise exc
