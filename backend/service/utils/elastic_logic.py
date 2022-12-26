@@ -47,6 +47,8 @@ async def get_matching_by_message(params, request) -> dict:
         return dict(res)
     except NotFoundError:
         raise NoIndex
+    except Exception as exc:
+        raise exc
 
 
 async def create_elastic_index(name) -> None:
