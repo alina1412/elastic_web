@@ -2,10 +2,12 @@ from fastapi import APIRouter, Query, status
 from fastapi.exceptions import HTTPException
 from starlette.requests import Request
 
+
 from service.config import econf  # isort: skip
 from service.utils.errors import NoIndex  # isort: skip
 from service.utils.elastic_logic import get_matching_by_message  # isort: skip
 from service.utils.formatters import prepare_results  # isort: skip
+from service.utils.schemas import TextInput # isort: skip
 
 api_router = APIRouter(
     prefix="/v1",
@@ -16,10 +18,11 @@ api_router = APIRouter(
 @api_router.get(
     "/match-data",
     status_code=status.HTTP_200_OK,
+    response_model=list[TextInput],
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Bad request"},
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Bad request"},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "some error"},
     },
 )
 async def get_matching_handler(
@@ -42,5 +45,5 @@ async def get_matching_handler(
         return res
     except NoIndex as exc:
         raise HTTPException(
-            500, f"No such index '{econf.elastic_index}' to search"
+            status.HTTP_400_BAD_REQUEST, f"No such index '{index_name}' to search"
         ) from exc
