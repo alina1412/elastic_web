@@ -1,17 +1,17 @@
 import json
+
+import uvicorn
 from fastapi import HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 from starlette.requests import Request
 
 # fmt: off
-from service.config import ElasticConfig, app
-from service.endpoints.create_index_handler import api_router as create_routes
-from service.endpoints.delete_handlers import api_router as delete_routes
-from service.endpoints.get_handlers import api_router as get_routes
-from service.utils.elastic_logic import get_all_from_index, get_matching_by_message
-from service.utils.formatters import prepare_results
-
+from service.config import ElasticConfig, app # isort: skip
+from service.endpoints.create_index_handler import api_router as create_routes # isort: skip
+from service.endpoints.delete_handlers import api_router as delete_routes # isort: skip
+from service.endpoints.get_handlers import api_router as get_routes # isort: skip
+from service.utils.elastic_logic import get_all_from_index, get_matching_by_message # isort: skip
+from service.utils.formatters import prepare_results # isort: skip
 # fmt: on
 
 
