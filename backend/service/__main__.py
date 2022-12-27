@@ -1,7 +1,7 @@
 import json
-
-import uvicorn
+from fastapi import HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 from starlette.requests import Request
 
 # fmt: off
@@ -27,21 +27,19 @@ app.add_middleware(
 )
 
 
-@app.post("/")
-async def root(request: Request, myBody: dict):
-    key = list(dict(myBody).keys())[0]
-    val = list(dict(myBody).values())[0]
-    index_default = ElasticConfig.elastic_index
-
-    if key == "onload":
-        res = await get_all_from_index(index_default)
-        res = prepare_results(res)
-        print(res)
-        return json.dumps({
+async def get_onload_data_from_index(index_default):
+    res = await get_all_from_index(index_default)
+    res = prepare_results(res)
+    print(res)
+    return json.dumps(
+        {
             "all": 1,
             "found": json.dumps(res),
-        })
+        }
+    )
 
+
+async def get_searching_data_from_index(val, request, index_default):
     params = {
         "query": val,
         "size": ElasticConfig.elastic_size,
@@ -56,6 +54,31 @@ async def root(request: Request, myBody: dict):
         "search": "Hello World",
         "found": json.dumps(res),
     }
+
+
+async def get_data_to_show(key, val, request, index_default):
+    if key == "onload":
+        return await get_onload_data_from_index(index_default)
+    else:
+        return await get_searching_data_from_index(val, request, index_default)
+
+
+@app.post("/")
+async def root(request: Request, myBody: dict):
+    try:
+        key = list(dict(myBody).keys())[0]
+        val = list(dict(myBody).values())[0]
+    except Exception as exc:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST) from exc
+
+    index_default = ElasticConfig.elastic_index
+    if not request.app.state.elastic_client.indices.exists(index=index_default):
+        raise HTTPException(404, detail="no index")
+    try:
+        data = await get_data_to_show(key, val, request, index_default)
+        return data
+    except Exception as exc:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR) from exc
 
 
 # if __name__ == "__main__":
