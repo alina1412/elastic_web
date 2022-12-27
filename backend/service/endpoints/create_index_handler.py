@@ -20,7 +20,7 @@ api_router = APIRouter(
     responses={
         status.HTTP_400_BAD_REQUEST: {"description": "Bad request"},
         status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Bad request"},
-        status.HTTP_500_INTERNAL_SERVER_ERROR: {},
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {"description": "error"},
     },
 )
 async def create_index_handler(
@@ -36,5 +36,9 @@ async def create_index_handler(
     except elasticsearch.exceptions.RequestError as exc:
         if exc.error == "resource_already_exists_exception":
             print("Index already exists")
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Index already exists") from exc
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST, "Index already exists"
+            ) from exc
         raise exc
+    except Exception as exc:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR) from exc

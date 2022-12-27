@@ -7,7 +7,7 @@ from service.config import econf  # isort: skip
 from service.utils.errors import NoIndex  # isort: skip
 from service.utils.elastic_logic import get_matching_by_message  # isort: skip
 from service.utils.formatters import prepare_results  # isort: skip
-from service.utils.schemas import TextInput # isort: skip
+from service.utils.schemas import TextInput  # isort: skip
 
 api_router = APIRouter(
     prefix="/v1",
@@ -47,3 +47,5 @@ async def get_matching_handler(
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST, f"No such index '{index_name}' to search"
         ) from exc
+    except Exception as exc:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR) from exc
