@@ -12,6 +12,7 @@ from service.endpoints.delete_handlers import api_router as delete_routes # isor
 from service.endpoints.get_handlers import api_router as get_routes # isort: skip
 from service.utils.elastic_logic import get_all_from_index, get_matching_by_message # isort: skip
 from service.utils.formatters import prepare_results # isort: skip
+from service.utils.errors import NoIndex  # isort: skip
 # fmt: on
 
 
@@ -27,8 +28,8 @@ app.add_middleware(
 )
 
 
-async def get_onload_data_from_index(index_default):
-    res = await get_all_from_index(index_default)
+async def get_onload_data_from_index(index):
+    res = await get_all_from_index(index)
     res = prepare_results(res)
     print(res)
     return json.dumps(
@@ -39,11 +40,11 @@ async def get_onload_data_from_index(index_default):
     )
 
 
-async def get_searching_data_from_index(val, request, index_default):
+async def get_searching_data_from_index(val, request, index):
     params = {
         "query": val,
         "size": ElasticConfig.elastic_size,
-        "index_name": index_default,
+        "index_name": index,
     }
     res = await get_matching_by_message(params, request)
     res = prepare_results(res)
@@ -56,11 +57,11 @@ async def get_searching_data_from_index(val, request, index_default):
     }
 
 
-async def get_data_to_show(key, val, request, index_default):
+async def get_data_to_show(key, val, request, index):
     if key == "onload":
-        return await get_onload_data_from_index(index_default)
+        return await get_onload_data_from_index(index)
     else:
-        return await get_searching_data_from_index(val, request, index_default)
+        return await get_searching_data_from_index(val, request, index)
 
 
 @app.post("/")
@@ -72,11 +73,11 @@ async def root(request: Request, myBody: dict):
         raise HTTPException(status.HTTP_400_BAD_REQUEST) from exc
 
     index_default = ElasticConfig.elastic_index
-    if not request.app.state.elastic_client.indices.exists(index=index_default):
-        raise HTTPException(404, detail="no index")
     try:
         data = await get_data_to_show(key, val, request, index_default)
         return data
+    except NoIndex:
+        raise HTTPException(404, detail="no index")
     except Exception as exc:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR) from exc
 

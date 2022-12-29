@@ -1,3 +1,5 @@
+import uuid
+
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from starlette.requests import Request
 
@@ -11,18 +13,11 @@ async def doc_delete_from_index(index_name, doc_id) -> None:
     id - manual from schema (should be unique)"""
     elastic_client = app.state.elastic_client
     if not elastic_client.indices.exists(index=index_name):
+        raise NoIndex
+    try:
+        elastic_client.delete(index=index_name, id=doc_id)
+    except NotFoundError:
         raise NotInElastic
-    query = {"query": {"term": {"id": doc_id}}}
-    res = app.state.elastic_client.search(index=index_name, body=query)
-
-    # id = res.get("hits", {}).get("hits", [{}])[0].get("_source", {}).get("id")
-    hits = res.get("hits", {}).get("hits", [{}])
-    if not hits:
-        raise NotInElastic
-    inner_id = hits[0].get("_id")
-    if not inner_id:
-        raise NotInElastic
-    app.state.elastic_client.delete(index=index_name, id=inner_id)
 
 
 async def get_matching_by_message(params, request) -> dict:
@@ -41,12 +36,12 @@ async def get_matching_by_message(params, request) -> dict:
         },
     }
     print("get_matching_by_message")
+    elastic_client: AsyncElasticsearch = request.app.state.elastic_client
+    if not elastic_client.indices.exists(index=params["index_name"]):
+        raise NoIndex
     try:
-        elastic_client: AsyncElasticsearch = request.app.state.elastic_client
         res = elastic_client.search(index=params["index_name"], body=searching)
         return dict(res)
-    except NotFoundError:
-        raise NoIndex
     except Exception as exc:
         raise exc
 
@@ -64,22 +59,25 @@ async def create_elastic_index(name) -> None:
         raise exc
 
 
-async def elastic_insert(index_name: str, insert_data: dict) -> None:
+async def elastic_insert(index_name: str, insert_data: dict, id=None) -> None:
     """insert data into elastic index"""
-    app.state.elastic_client.index(index=index_name, document=insert_data)
+    id = id or uuid.uuid4()
+    app.state.elastic_client.index(index=index_name, id=id, document=insert_data)
 
 
-async def delete_index(request: Request, index_name: str):
+async def delete_index(request: Request, index_name: str) -> None:
     """delete index from elastic"""
     elastic_client: AsyncElasticsearch = request.app.state.elastic_client
-    elastic_client.indices.delete(index=index_name)
-
-
-async def get_all_from_index(index_name):
-    searching = {"query": {"match_all": {}}}
     try:
-        elastic_client: AsyncElasticsearch = app.state.elastic_client
-        res = elastic_client.search(index=index_name, body=searching)
-        return dict(res)
-    except NotFoundError:
+        elastic_client.indices.delete(index=index_name)
+    except NotFoundError as exc:
+        raise exc
+
+
+async def get_all_from_index(index_name) -> dict:
+    searching = {"query": {"match_all": {}}}
+    elastic_client: AsyncElasticsearch = app.state.elastic_client
+    if not elastic_client.indices.exists(index=index_name):
         raise NoIndex
+    res = elastic_client.search(index=index_name, body=searching)
+    return dict(res)

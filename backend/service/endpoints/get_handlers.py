@@ -2,7 +2,6 @@ from fastapi import APIRouter, Query, status
 from fastapi.exceptions import HTTPException
 from starlette.requests import Request
 
-
 from service.config import econf  # isort: skip
 from service.utils.errors import NoIndex  # isort: skip
 from service.utils.elastic_logic import get_matching_by_message  # isort: skip

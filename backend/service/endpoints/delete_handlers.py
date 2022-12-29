@@ -27,7 +27,7 @@ api_router = APIRouter(
     },
 )
 async def delete_one_handler(
-    doc_id: int,
+    doc_id: str,
     index_name: str = Query(default="map", min_length=1, description="index name"),
 ):
     """Deletes a document from elastic index by id"""

@@ -1,6 +1,6 @@
 import asyncio
 import csv
-
+import uuid
 import elasticsearch
 
 # fmt: off
@@ -10,6 +10,7 @@ from backend.service.mapping import (
     mapping_for_index,
 )  # isort: skip
 # fmt: on
+
 
 async def create_elastic_index(name) -> None:
     """creates index in elastic by name"""
@@ -21,9 +22,10 @@ async def create_elastic_index(name) -> None:
     )
 
 
-async def elastic_insert(index_name: str, insert_data: dict) -> None:
+async def elastic_insert(index_name: str, insert_data: dict, id=None) -> None:
     """insert data into elastic index"""
-    app.state.elastic_client.index(index=index_name, document=insert_data)
+    id = id or uuid.uuid4()
+    app.state.elastic_client.index(index=index_name, id=id, document=insert_data)
 
 
 def get_tuple_from_csv():
@@ -40,7 +42,7 @@ def fake_get_tuple():
         (1, "образец поискового запроса 1"),
         (2, "текст на русском, админ не проверял"),
         (3, "образ этого текста отпечатался сам"),
-        (4, "преобразован администратором")
+        (4, "преобразован администратором"),
     ]
     for tuple_ in data:
         yield tuple_
@@ -59,8 +61,8 @@ async def main():
 
     # for number, message in get_tuple_from_csv():
     for number, message in fake_get_tuple():
-        data = {"id": number, "message": message}
-        await elastic_insert(index_name, data)
+        data = {"message": message}
+        await elastic_insert(index_name, data, number)
 
 
 if __name__ == "__main__":
