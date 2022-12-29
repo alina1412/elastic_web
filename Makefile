@@ -71,3 +71,7 @@ check:
 del:
 	curl -XPOST "$(ES_URL)/map/_delete_by_query?pretty" -H 'Content-Type: application/json' -d'	{	"query": {		"match_all": {}		}	}	'
 	curl -XDELETE "$(ES_URL)/map"
+
+# see the space you have available on each node by running:
+stats:
+	curl -XGET $(ES_URL)/_nodes/stats/fs?pretty
