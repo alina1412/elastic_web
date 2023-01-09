@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.7"
 services:
 
   elasticsearch:
@@ -22,6 +22,7 @@ services:
       - ${ELASTIC_H_PORT}:9200  
     # volumes:
     #   - elasticsearch-data:/usr/share/elasticsearch/data
+    #   # - ./elastic/custom_elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
   backend:
     container_name: ${DOCKER_APP_NAME}
@@ -66,3 +67,5 @@ services:
 # volumes:
 #   elasticsearch-data:
 #     driver: local
+#   # ./elastic/custom_elasticsearch.yml:
+#   #   driver: local
