@@ -21,8 +21,8 @@ logs:
 	docker-compose logs
 
 app:
-	docker-compose build backend
-	docker-compose up -d backend
+	docker compose build backend
+	docker compose up -d backend
 
 
 test:

@@ -5,7 +5,7 @@ services:
     container_name: elastic-web
     image: elastic-web
     build: ./elastic
-    restart: always
+    # restart: always
     environment:
       - xpack.security.enabled=false
       - discovery.type=single-node
@@ -25,10 +25,10 @@ services:
     #   # - ./elastic/custom_elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
   backend:
-    container_name: ${DOCKER_APP_NAME}
+    container_name: e-backend
     build: ./backend/service
     image: fastapi-app
-    restart: always
+    # restart: always
     ports:
       - 8000:80
     environment:
@@ -54,16 +54,6 @@ services:
       backend:
         condition: service_started
  
-  # kibana:
-  #   image: 'kibana:8.5.1'
-  #   container_name: 'kibana'
-  #   ports:
-  #     - 5601:5601
-  #   environment:
-  #     SERVER_NAME: kibana1
-  #     ELASTICSEARCH_URL: http://elasticsearch:9200
-
-
 # volumes:
 #   elasticsearch-data:
 #     driver: local
