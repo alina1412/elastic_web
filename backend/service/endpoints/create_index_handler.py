@@ -4,8 +4,6 @@ from fastapi.exceptions import HTTPException
 from starlette.requests import Request
 
 from service.utils.elastic_logic import create_elastic_index  # isort: skip
-from service.utils.errors import NoIndex  # isort: skip
-from service.config import econf  # isort: skip
 
 
 api_router = APIRouter(
@@ -27,7 +25,7 @@ async def create_index_handler(
     request: Request,
     name: str = Query(default="", min_length=1, description="index name"),
 ):
-    """create index"""
+    """Create index"""
     if not name.strip():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="nothing to create")
 

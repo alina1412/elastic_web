@@ -1,6 +1,5 @@
 import json
 
-import uvicorn
 from fastapi import HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request

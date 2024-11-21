@@ -29,7 +29,7 @@ async def get_matching_handler(
     index_name: str = Query(default="map", min_length=1, description="index name"),
     query: str = Query(default="", min_length=2, description="search query"),
 ):
-    """gets matching docs from elastic by query,"""
+    """Gets matching docs from elastic by query,"""
     if not query.strip() or not index_name.strip():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="nothing to search")
 

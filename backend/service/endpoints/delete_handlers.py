@@ -54,7 +54,7 @@ async def delete_index_handler(
     request: Request,
     index_name: str = Query(default="map", min_length=1, description="index name"),
 ):
-    """delete_index from elastic"""
+    """Delete_index from elastic"""
     try:
         await delete_index(request, index_name)
     except NotFoundError as exc:

@@ -45,7 +45,7 @@ services:
     container_name: frontend-search
     image: frontend-search
     build: ./web
-    restart: always
+    # restart: always
     volumes:
       - ./web:/usr/share/nginx/html:ro
     ports:

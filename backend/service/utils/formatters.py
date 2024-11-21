@@ -3,7 +3,9 @@ def prepare_results(results) -> list[dict]:
     source_res = []
     for elem in results.get("hits", {}).get("hits", [{}]):
         if elem:
-            record = {"id": elem.get("_id"), 
-                      "message": elem.get("_source", {}).get("message", "")}
+            record = {
+                "id": elem.get("_id"),
+                "message": elem.get("_source", {}).get("message", ""),
+            }
             source_res.append(record)
     return source_res

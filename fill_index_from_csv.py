@@ -13,7 +13,7 @@ from backend.service.mapping import (
 
 
 async def create_elastic_index(name) -> None:
-    """creates index in elastic by name"""
+    """Creates index in elastic by name"""
     elastic_client = app.state.elastic_client
     elastic_client.indices.create(
         index=name,
@@ -23,13 +23,13 @@ async def create_elastic_index(name) -> None:
 
 
 async def elastic_insert(index_name: str, insert_data: dict, id=None) -> None:
-    """insert data into elastic index"""
+    """Insert data into elastic index"""
     id = id or uuid.uuid4()
     app.state.elastic_client.index(index=index_name, id=id, document=insert_data)
 
 
 def get_tuple_from_csv():
-    """number, message"""
+    """Number, message"""
     with open("posts.csv", "r", newline="", encoding="utf-8") as csvfile:
         docreader = csv.reader(csvfile)
         next(docreader)

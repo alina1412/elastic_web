@@ -1,12 +1,10 @@
 from elasticsearch import AsyncElasticsearch
-from elasticsearch.exceptions import NotFoundError
 from fastapi import APIRouter, Query, status
 from fastapi.exceptions import HTTPException
 from starlette.requests import Request
 
 # fmt: off
 from service.utils.elastic_logic import elastic_insert  # isort: skip
-from service.utils.errors import NotInElastic  # isort: skip
 # fmt: on
 
 api_router = APIRouter(
@@ -30,7 +28,6 @@ async def create_data_handler(
     doc_id: str = Query(default="", min_length=1, description="doc id"),
     message: str = Query(default="", min_length=1, description="message"),
 ):
-    """"""
     index_name = index_name.strip()
     message = message.strip()
     doc_id = doc_id.strip()

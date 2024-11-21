@@ -9,8 +9,9 @@ from service.utils.errors import NoIndex, NotInElastic  # isort: skip
 
 
 async def doc_delete_from_index(index_name, doc_id) -> None:
-    """deletes doc from index in elastic by id
-    id - manual from schema (should be unique)"""
+    """Deletes doc from index in elastic by id
+    id - manual from schema (should be unique)
+    """
     elastic_client = app.state.elastic_client
     if not elastic_client.indices.exists(index=index_name):
         raise NoIndex
@@ -47,7 +48,7 @@ async def get_matching_by_message(params, request) -> dict:
 
 
 async def create_elastic_index(name) -> None:
-    """creates index in elastic by name"""
+    """Creates index in elastic by name"""
     try:
         elastic_client: AsyncElasticsearch = app.state.elastic_client
         elastic_client.indices.create(
@@ -60,13 +61,13 @@ async def create_elastic_index(name) -> None:
 
 
 async def elastic_insert(index_name: str, insert_data: dict, id=None) -> None:
-    """insert data into elastic index"""
+    """Insert data into elastic index"""
     id = id or uuid.uuid4()
     app.state.elastic_client.index(index=index_name, id=id, document=insert_data)
 
 
 async def delete_index(request: Request, index_name: str) -> None:
-    """delete index from elastic"""
+    """Delete index from elastic"""
     elastic_client: AsyncElasticsearch = request.app.state.elastic_client
     try:
         elastic_client.indices.delete(index=index_name)
